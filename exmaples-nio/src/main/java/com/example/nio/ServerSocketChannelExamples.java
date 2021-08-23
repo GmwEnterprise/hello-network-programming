@@ -25,6 +25,7 @@ public class ServerSocketChannelExamples {
                 while (sc.read(buf) != -1) {
                     buf.flip();
                     reader.readBuffer(buf);
+                    buf.compact();
                     if (reader.packPrepared() != null) {
                         int command = dealContent(reader.packPrepared());
                         reader = new PackReader();

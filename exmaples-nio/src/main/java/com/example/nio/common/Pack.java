@@ -6,7 +6,7 @@ public class Pack {
 
     private final byte[] content;
     private final int len;
-    private static final int MAX_BUFF_SIZE = 1024;
+    private static final int MAX_BUFF_SIZE = 4;
 
     public Pack(String content) {
         this.content = content.getBytes();
@@ -23,14 +23,14 @@ public class Pack {
     }
 
     public ByteBuffer[] packageToByteBufferArray() {
-        int n = len % MAX_BUFF_SIZE;
+        int n = len / MAX_BUFF_SIZE + 1;
         ByteBuffer[] res = new ByteBuffer[n + 1];
         ByteBuffer head = writeHead();
         head.flip();
         res[0] = head;
         int i = 0, a = 1;
         ByteBuffer item;
-        while (a < n) {
+        while (a < res.length) {
             int writeLen = Math.min(len - i, MAX_BUFF_SIZE);
             item = ByteBuffer.allocate(writeLen);
             item.put(content, i, writeLen);
