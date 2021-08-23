@@ -13,7 +13,16 @@ public class Pack {
         this.len = this.content.length;
     }
 
-    public ByteBuffer[] getPack() {
+    public Pack(byte[] content) {
+        this.content = content;
+        this.len = this.content.length;
+    }
+
+    public String getContent() {
+        return new String(content);
+    }
+
+    public ByteBuffer[] packageToByteBufferArray() {
         int n = len % MAX_BUFF_SIZE;
         ByteBuffer[] res = new ByteBuffer[n + 1];
         ByteBuffer head = writeHead();
@@ -33,32 +42,10 @@ public class Pack {
     }
 
     private ByteBuffer writeHead() {
+        // 头部占用5个字节，第一位默认为0，后四位为包体长度
         ByteBuffer head = ByteBuffer.allocate(5);
         head.put(((byte) 0));
-        head.put(intToByteArray(len));
+        head.put(Bytes.intToByteArray(len));
         return head;
-    }
-
-    public static byte[] intToByteArray(int num) {
-        return new byte[]{
-                (byte) (num >> 24),
-                (byte) ((num >> 16) & 0xFF),
-                (byte) ((num >> 8) & 0xFF),
-                (byte) (num & 0xFF),
-                };
-    }
-
-    public static int calculateLen(byte[] header) {
-        byte[] bytes = new byte[4];
-        System.arraycopy(header, 1, bytes, 0, 4);
-        return byteArrayToInt(bytes);
-    }
-
-    public static int byteArrayToInt(byte[] array) {
-        return (array[0] << 24) | (array[1] << 16) | (array[2] << 8) | array[3];
-    }
-
-    public static void main(String[] args) {
-        System.out.println(byteArrayToInt(intToByteArray(1288888)));
     }
 }

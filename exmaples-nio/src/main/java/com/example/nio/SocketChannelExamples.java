@@ -16,7 +16,8 @@ public class SocketChannelExamples {
         while (!sc.finishConnect()) ;
         for (String arg : args) {
             Pack pack = new Pack(arg);
-            for (ByteBuffer buf : pack.getPack()) {
+            ByteBuffer[] byteBuffers = pack.packageToByteBufferArray();
+            for (ByteBuffer buf : byteBuffers) {
                 sc.write(buf);
             }
         }

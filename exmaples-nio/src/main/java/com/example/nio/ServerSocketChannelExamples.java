@@ -1,6 +1,8 @@
 package com.example.nio;
 
-import java.io.ByteArrayOutputStream;
+import com.example.nio.common.Pack;
+import com.example.nio.common.PackReader;
+
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
 import java.nio.channels.ServerSocketChannel;
@@ -14,31 +16,41 @@ public class ServerSocketChannelExamples {
         ssc.configureBlocking(false);
         ssc.socket().bind(new InetSocketAddress("localhost", 3000));
 
+        PackReader reader = new PackReader();
+        int exit = 0;
         while (true) {
             SocketChannel sc = ssc.accept();
             if (sc != null) {
-                ByteArrayOutputStream output = new ByteArrayOutputStream();
-                ByteBuffer buff = ByteBuffer.allocate(8);
-                while (sc.read(buff) != -1) {
-                    buff.flip();
-                    int offset = buff.position();
-                    int limit = buff.limit();
-                    int length = limit - offset;
-                    output.write(buff.array(), offset, length);
-                    buff.position(limit);
-                    buff.compact();
+                ByteBuffer buf = ByteBuffer.allocate(8);
+                while (sc.read(buf) != -1) {
+                    buf.flip();
+                    reader.readBuffer(buf);
+                    if (reader.packPrepared() != null) {
+                        int command = dealContent(reader.packPrepared());
+                        reader = new PackReader();
+                        if (command == 0) {
+                            exit = 1;
+                            break;
+                        }
+                    }
                 }
-                String content = output.toString();
-                if ("EXIT".equals(content)) {
-                    System.out.println("EXIT !");
-                    break;
-                } else {
-                    System.out.println("RECEIVE: " + content);
-                }
+            }
+            if (exit == 1) {
+                System.out.println("EXIT !");
+                break;
             }
             TimeUnit.SECONDS.sleep(1L);
             System.out.println("waiting ...");
         }
         ssc.close();
+    }
+
+    private static int dealContent(Pack pack) {
+        String content = pack.getContent();
+        if ("EXIT".equals(content)) {
+            return 0;
+        }
+        System.out.println("Receive content: " + content);
+        return 1;
     }
 }
