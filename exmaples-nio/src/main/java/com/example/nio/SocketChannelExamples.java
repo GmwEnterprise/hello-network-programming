@@ -10,10 +10,9 @@ public class SocketChannelExamples {
 
     public static void main(String[] args) throws Exception {
         SocketChannel sc = SocketChannel.open();
-        sc.configureBlocking(false);
+        sc.configureBlocking(true);
         sc.connect(new InetSocketAddress("localhost", 3000));
 
-        while (!sc.finishConnect()) ;
         for (String arg : args) {
             Pack pack = new Pack(arg);
             ByteBuffer[] byteBuffers = pack.packageToByteBufferArray();
