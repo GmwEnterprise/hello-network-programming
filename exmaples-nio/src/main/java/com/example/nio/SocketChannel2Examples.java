@@ -5,9 +5,8 @@ import com.example.nio.common.Pack;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
-import java.util.Arrays;
 
-public class SocketChannelExamples {
+public class SocketChannel2Examples {
 
     public static void main(String[] args) throws Exception {
         SocketChannel sc = SocketChannel.open();
@@ -22,18 +21,7 @@ public class SocketChannelExamples {
                 sc.write(buf);
             }
         }
-        Thread.sleep(3000);
-
-        int read;
-        ByteBuffer buffer = ByteBuffer.allocate(16);
-        while ((read = sc.read(buffer)) > 0) {
-            byte[] bytes = new byte[read];
-            buffer.flip();
-            buffer.get(bytes);
-            buffer.compact();
-            System.out.println("RETURN: " + Arrays.toString(bytes));
-        }
-
+        Thread.sleep(5000);
         sc.close();
     }
 }
