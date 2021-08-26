@@ -1,6 +1,6 @@
 package com.example.nio;
 
-import com.example.nio.common.Pack;
+import com.example.Pack;
 
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
@@ -21,7 +21,7 @@ public class SocketChannel2Examples {
                 sc.write(buf);
             }
         }
-        Thread.sleep(5000);
+        Thread.sleep(200);
         sc.close();
     }
 }

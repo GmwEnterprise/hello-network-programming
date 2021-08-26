@@ -1,7 +1,8 @@
 package com.example.nio;
 
-import com.example.nio.common.Log;
+import com.example.common.Log;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
@@ -31,6 +32,7 @@ public class SelectorReactorExamples {
                 SocketChannel sc = ((ServerSocketChannel) sscKey.channel()).accept();
                 sc.configureBlocking(false);
                 ByteBuffer buf = ByteBuffer.allocate(256); // 一个sc对应一个buffer
+                ByteArrayOutputStream output = new ByteArrayOutputStream();
                 sc.register(selector, SelectionKey.OP_READ, (SelectableChannelHandler) (scKey) -> {
                     // read事件处理器，打印出接收到的字节数据，然后关闭socketChannel
                     // OP_READ触发条件三选一：1）通道准备好读取；2）已到达流的末尾；3）远程已关闭
@@ -43,17 +45,34 @@ public class SelectorReactorExamples {
                         // read事件
                         int read;
                         while ((read = currentSc.read(buf)) != -1) {
+                            Log.info("read == " + read);
                             // 在一次读取结束之前可能会出现连续两次进入循环而且read == 0的情况
-                            if (read > 0) {
-                                buf.flip(); // for next read
-                                byte[] content = new byte[read];
-                                buf.get(content);
-                                buf.clear(); // for next write
-                                Log.info("Receive bytes: " + Arrays.toString(content));
-                            }
+                            buf.flip(); // for next read
+                            byte[] content = new byte[read];
+                            buf.get(content);
+                            buf.clear(); // for next write
+                            Log.info("Receive bytes: " + Arrays.toString(content));
+                            output.write(content);
                         }
-                        Log.info("read = -1");
-                        sc.close();
+                        Log.info("read == -1");
+                        scKey.interestOps(SelectionKey.OP_WRITE);
+                        // sc.close();
+                    } else if ((scKey.readyOps() & SelectionKey.OP_WRITE) != 0) {
+                        if (output.size() != 0) {
+                            byte[] toWrite = output.toByteArray();
+                            int pos = 0, limit = toWrite.length;
+                            while (pos < limit) {
+                                int writeLen = Math.min(buf.remaining(), limit - pos);
+                                byte[] write = new byte[writeLen];
+                                System.arraycopy(toWrite, pos, write, 0, writeLen);
+                                buf.put(write);
+                                pos += writeLen;
+                            }
+                            buf.flip();
+                            sc.write(buf);
+                            scKey.interestOps(SelectionKey.OP_READ);
+                            Log.info("Write done.");
+                        }
                     }
                 });
             });

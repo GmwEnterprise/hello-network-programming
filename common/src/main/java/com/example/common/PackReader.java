@@ -1,4 +1,4 @@
-package com.example.nio.common;
+package com.example.common;
 
 import java.io.ByteArrayOutputStream;
 import java.nio.ByteBuffer;

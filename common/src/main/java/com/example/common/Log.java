@@ -1,4 +1,4 @@
-package com.example.nio.common;
+package com.example.common;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;

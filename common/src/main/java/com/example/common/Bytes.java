@@ -1,4 +1,4 @@
-package com.example.nio.common;
+package com.example.common;
 
 public final class Bytes {
 

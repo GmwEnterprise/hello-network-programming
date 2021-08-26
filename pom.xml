@@ -10,6 +10,7 @@
     <modules>
         <module>exmaples-nio</module>
         <module>examples-netty-discard-server</module>
+        <module>common</module>
     </modules>
     <packaging>pom</packaging>
 

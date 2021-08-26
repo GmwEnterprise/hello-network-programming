@@ -1,7 +1,7 @@
 package com.example.nio;
 
-import com.example.nio.common.Pack;
-import com.example.nio.common.PackReader;
+import com.example.Pack;
+import com.example.PackReader;
 
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
