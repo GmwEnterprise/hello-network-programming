@@ -44,7 +44,7 @@ public class SelectorReactorExamples {
                     if ((scKey.readyOps() & SelectionKey.OP_READ) != 0) {
                         // read事件
                         int read;
-                        while ((read = currentSc.read(buf)) != -1) {
+                        while ((read = currentSc.read(buf)) > 0) {
                             Log.info("read == " + read);
                             // 在一次读取结束之前可能会出现连续两次进入循环而且read == 0的情况
                             buf.flip(); // for next read
@@ -54,9 +54,7 @@ public class SelectorReactorExamples {
                             Log.info("Receive bytes: " + Arrays.toString(content));
                             output.write(content);
                         }
-                        Log.info("read == -1");
                         scKey.interestOps(SelectionKey.OP_WRITE);
-                        // sc.close();
                     } else if ((scKey.readyOps() & SelectionKey.OP_WRITE) != 0) {
                         if (output.size() != 0) {
                             byte[] toWrite = output.toByteArray();

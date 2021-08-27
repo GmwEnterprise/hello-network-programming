@@ -1,6 +1,6 @@
 package com.example.nio;
 
-import com.example.Pack;
+import com.example.common.Pack;
 
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;

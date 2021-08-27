@@ -11,6 +11,7 @@
         <module>exmaples-nio</module>
         <module>examples-netty-discard-server</module>
         <module>common</module>
+        <module>examples-netty-in-action</module>
     </modules>
     <packaging>pom</packaging>
 
