@@ -1,17 +1,53 @@
 package com.example.nettyinaction;
 
+import io.netty.bootstrap.Bootstrap;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
-import io.netty.channel.ChannelHandlerContext;
-import io.netty.channel.SimpleChannelInboundHandler;
+import io.netty.channel.*;
+import io.netty.channel.nio.NioEventLoopGroup;
+import io.netty.channel.socket.SocketChannel;
+import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.util.CharsetUtil;
+
+import java.net.InetSocketAddress;
 
 public class Example1EchoClientDemo {
 
-    public static void main(String[] args) {
-
+    public static void main(String[] args) throws Exception {
+        new EchoClient("localhost", 3000).start();
     }
 
+    private static class EchoClient {
+        private final String host;
+        private final int port;
+
+        public EchoClient(String host, int port) {
+            this.host = host;
+            this.port = port;
+        }
+
+        public void start() throws Exception {
+            EventLoopGroup group = new NioEventLoopGroup();
+            try {
+                Bootstrap boot = new Bootstrap()
+                        .group(group)
+                        .channel(NioSocketChannel.class)
+                        .remoteAddress(new InetSocketAddress(host, port))
+                        .handler(new ChannelInitializer<SocketChannel>() {
+                            @Override
+                            protected void initChannel(SocketChannel ch) throws Exception {
+                                ch.pipeline().addLast(new EchoClientHandler());
+                            }
+                        });
+                ChannelFuture f = boot.connect().sync();
+                f.channel().closeFuture().sync();
+            } finally {
+                group.shutdownGracefully().sync();
+            }
+        }
+    }
+
+    @ChannelHandler.Sharable
     private static class EchoClientHandler extends SimpleChannelInboundHandler<ByteBuf> {
 
         @Override
