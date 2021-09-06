@@ -34,6 +34,7 @@ public class Example1EchoServerDemo {
 
                             @Override
                             protected void initChannel(SocketChannel ch) throws Exception {
+                                System.out.println("child handler");
                                 ch.pipeline().addLast(serviceHandler);
                             }
                         });

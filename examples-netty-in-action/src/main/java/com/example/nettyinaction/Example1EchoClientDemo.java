@@ -32,11 +32,14 @@ public class Example1EchoClientDemo {
                 Bootstrap boot = new Bootstrap()
                         .group(group)
                         .channel(NioSocketChannel.class)
+                        .option(ChannelOption.SO_KEEPALIVE, true)
                         .remoteAddress(new InetSocketAddress(host, port))
                         .handler(new ChannelInitializer<SocketChannel>() {
+
                             @Override
                             protected void initChannel(SocketChannel ch) throws Exception {
-                                ch.pipeline().addLast(new EchoClientHandler());
+                                ChannelPipeline p = ch.pipeline();
+                                p.addLast(new EchoClientHandler());
                             }
                         });
                 ChannelFuture f = boot.connect().sync();
@@ -52,11 +55,13 @@ public class Example1EchoClientDemo {
 
         @Override
         public void channelActive(ChannelHandlerContext ctx) throws Exception {
+            System.out.println("channelActive");
             ctx.writeAndFlush(Unpooled.copiedBuffer("Netty rocks!", CharsetUtil.UTF_8));
         }
 
         @Override
         protected void channelRead0(ChannelHandlerContext ctx, ByteBuf msg) throws Exception {
+            System.out.println("channelRead0");
             System.out.printf("Client Received: %s%n", msg.toString(CharsetUtil.UTF_8));
         }
 
