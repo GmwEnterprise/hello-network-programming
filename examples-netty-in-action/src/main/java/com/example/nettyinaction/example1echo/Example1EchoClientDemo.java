@@ -1,4 +1,4 @@
-package com.example.nettyinaction;
+package com.example.nettyinaction.example1echo;
 
 import io.netty.bootstrap.Bootstrap;
 import io.netty.buffer.ByteBuf;

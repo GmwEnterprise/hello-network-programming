@@ -12,6 +12,7 @@
         <module>examples-netty-discard-server</module>
         <module>common</module>
         <module>examples-netty-in-action</module>
+        <module>examples-excel</module>
     </modules>
     <packaging>pom</packaging>
 
